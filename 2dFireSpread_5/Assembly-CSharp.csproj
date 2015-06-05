@@ -51,7 +51,6 @@
      <Compile Include="Assets\2dFireSpread\Scripts\TextOutline.cs" />
      <Compile Include="Assets\2dFireSpread\Scripts\UI\FireSpreadManagerInteractionModeChanger.cs" />
      <Compile Include="Assets\2dFireSpread\Scripts\UI\FireSpreadManagerLabelModeChanger.cs" />
-     <Compile Include="Assets\2dFireSpread\Scripts\UI\SliderValueTextUpdate.cs" />
      <Compile Include="Assets\2dFireSpread\Scripts\UI\ToggleGroupListener.cs" />
      <Compile Include="Assets\VTL\BuildHexagonGrid.cs" />
  <Reference Include="UnityEngine.UI">
