@@ -23,8 +23,6 @@ public class FireSpreadManager : MonoBehaviour
 
     public float burnProbability = 0.2f;
 
-    string fuelmap_path = @"Maps/fuelload";
-
     void Start()
     {
         DefineSpacingParameters();
@@ -50,39 +48,9 @@ public class FireSpreadManager : MonoBehaviour
         }
     }
 
-    void GenerateRandomFuelLoadMap(out float[,] fuelload)
-    {
-        fuelload = new float[numWidth, numHeight];
-
-        for (int i = 0; i < numWidth; i++)
-            for (int j = 0; j < numHeight; j++)
-                fuelload[i, j] = Random.Range(0f, 1f);
-    }
-
-    void ReadFuelLoadMap(out float[,] fuelload)
-    {
-        Texture2D tex = Resources.Load<Texture2D>(fuelmap_path);
-
-        if (tex.width != numWidth || tex.height != numHeight || tex == null)
-        {
-            Debug.LogWarning("Error load fuelmap, generating random map.");
-            GenerateRandomFuelLoadMap(out fuelload);
-            return;
-        }
-
-        fuelload = new float[numWidth, numHeight];
-
-        for (int i = 0; i < numWidth; i++)
-            for (int j = 0; j < numHeight; j++)
-                fuelload[i, j] = tex.GetPixel(i, j).r;
-    }
-
     public void Build()
     {
         DefineSpacingParameters();
-
-        float[,] fuelload;
-        ReadFuelLoadMap(out fuelload);
 
         hexCells = new GameObject[numWidth, numHeight];
 
@@ -96,11 +64,7 @@ public class FireSpreadManager : MonoBehaviour
 
                 var xPos = i * xSpacing;
                 var yPos = j * ySpacing + (i % 2 == 0 ? 0f : yOffset);
-                g.transform.position = new Vector3(xPos, fuelload[i, j] * 1, yPos);
-                g.transform.localScale = new Vector3(1, fuelload[i, j] * 2, 1);
-
-                g.GetComponent<BurnState>()
-                 .initialFuelload = fuelload[i, j];
+                g.transform.position = new Vector3(xPos, yPos, 0f);
 
                 g.GetComponent<BurnState>()
                  .gridLocation = new Vector2(i, j);
@@ -241,21 +205,13 @@ public class FireSpreadManager : MonoBehaviour
         }
     }
 
-    void SetLabelsActive()
+    private void SetLabelsActive()
     {
         foreach (Transform child in transform)
         {
             var text = child.FindChild("Text");
             if (text != null)
                 text.gameObject.SetActive(true);
-        }
-    }
-
-    public void Reset()
-    {
-        foreach (Transform child in transform)
-        {
-            child.GetComponent<BurnState>().Reset();
         }
     }
 

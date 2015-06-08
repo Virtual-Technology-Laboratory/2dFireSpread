@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using VTL.UI;
 
 public class FireSpreadManagerInteractionModeChanger : ToggleGroupListener
 {
