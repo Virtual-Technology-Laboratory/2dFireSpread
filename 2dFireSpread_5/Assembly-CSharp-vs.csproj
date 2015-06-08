@@ -52,7 +52,9 @@
      <Compile Include="Assets\2dFireSpread\Scripts\UI\FireSpreadManagerInteractionModeChanger.cs" />
      <Compile Include="Assets\2dFireSpread\Scripts\UI\FireSpreadManagerLabelModeChanger.cs" />
      <Compile Include="Assets\2dFireSpread\Scripts\UI\ToggleGroupListener.cs" />
+     <Compile Include="Assets\2dFireSpread\Scripts\UI\UpdateBurnProbabilityOnStart.cs" />
      <Compile Include="Assets\VTL\BuildHexagonGrid.cs" />
+     <Compile Include="Assets\VTL\UI\SliderValueTextUpdate.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/apps/Unity5/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
