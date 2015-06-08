@@ -16,15 +16,20 @@ public class BurnState : MonoBehaviour
     public List<BurnState> neighbors;
     MeshRenderer meshRenderer;
 
-    public static Color BurnedColor =   new Color(150f / 255f,  56f / 255f,  30f / 255f);
-    public static Color UnburnedColor = new Color(116f / 255f, 193f / 255f, 62f / 255f);
-    public static Color BurningColor = new Color(234f / 255f, 63f / 255f, 0f / 255f);
-    public static Color FirewallColor = new Color(18f / 255f, 200f / 255f, 248f / 255f);
+    public float initialFuelload;     // normalized between 0-1
+    public float fuelload;            // normalized between 0-1
+    const float fuelburnMaxDuration = 5; // number of fixed updates for maximum fuel load
+
+    static Color BurnedColor =   new Color(150f / 255f,  56f / 255f,  30f / 255f);
+    static Color UnburnedColor = new Color(116f / 255f, 193f / 255f, 62f / 255f);
+    static Color BurningColor = new Color(234f / 255f, 63f / 255f, 0f / 255f);
+    static Color FirewallColor = new Color(18f / 255f, 200f / 255f, 248f / 255f);
     public static Dictionary<BurnStates, Color> burnStateColors;
 
     // Use this for initialization
     void Start()
     {
+        fuelload = initialFuelload;
         burnState = TheBurnState = BurnStates.Unburned;
         meshRenderer = GetComponent<MeshRenderer>();
         burnStateColors = new Dictionary<BurnStates, Color>();
@@ -41,11 +46,21 @@ public class BurnState : MonoBehaviour
         // needs to be updated here.
         //
         // This is essentially a really inefficient FixedLateUpdate
-        if (TheBurnState != burnState)
+        
+        if (burnState == BurnStates.Burning)
         {
-            burnState = TheBurnState;
-            meshRenderer.material.SetColor("_EmissionColor", burnStateColors[burnState]);
+            fuelload = Mathf.Clamp01(fuelload - (1f / fuelburnMaxDuration * Time.timeScale));
+            if (fuelload == 0)
+                TheBurnState = BurnStates.Burned;
         }
+
+        burnState = TheBurnState;
+        meshRenderer.material.SetColor("_Color", burnStateColors[burnState]);
+        var yScale = Mathf.Clamp(fuelload * 2f, 0.01f, 2f);
+        transform.localScale = new Vector3(1, yScale, 1);
+        var pos = transform.position;
+        pos.y = yScale / 2;
+        transform.position = pos;
     }
 
     public void OnMouseUp()
@@ -61,8 +76,6 @@ public class BurnState : MonoBehaviour
 
     void FixedUpdate()
     {
-        //if (gridLocation.x == 0 && gridLocation.y == 0)
-        //    Debug.Log("update");
 
         if (burnState != BurnStates.Firewall)
         {
@@ -72,10 +85,16 @@ public class BurnState : MonoBehaviour
                     if (Random.Range(0f, 1f) < fireSpreadManager.burnProbability)
                         TheBurnState = BurnStates.Burning;
             }
-            else if (burnState == BurnStates.Burning)
-                TheBurnState = BurnStates.Burned;
         }
+    }
 
+    public void Reset()
+    {
+        if (burnState != BurnStates.Firewall)
+        {
+            TheBurnState = BurnStates.Unburned;
+            fuelload = initialFuelload;
+        }
     }
 
     bool AnyNeighborsBurning()
